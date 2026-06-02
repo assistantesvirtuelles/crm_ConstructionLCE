@@ -9,7 +9,9 @@ import {
   Mail,
   Settings,
   Zap,
+  LogOut,
 } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext.jsx';
 
 const NAV_ITEMS = [
   { label: 'Dashboard', icon: LayoutDashboard, to: '/dashboard' },
@@ -131,6 +133,40 @@ function NavItem({ item }) {
   );
 }
 
+function SignOutButton() {
+  const { signOut } = useAuth();
+  const [hover, setHover] = useState(false);
+
+  return (
+    <button
+      onClick={() => signOut()}
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: '10px',
+        width: '100%',
+        marginTop: '6px',
+        padding: '9px 12px',
+        borderRadius: 'var(--radius-md)',
+        background: 'var(--surface-2)',
+        border: '1px solid var(--border)',
+        color: hover ? 'var(--text)' : 'var(--muted)',
+        fontFamily: 'var(--font-display)',
+        fontSize: '13.5px',
+        fontWeight: 600,
+        cursor: 'pointer',
+        textAlign: 'left',
+        transition: 'all var(--transition)',
+      }}
+    >
+      <LogOut size={16} strokeWidth={1.8} />
+      Sign out
+    </button>
+  );
+}
+
 export default function Sidebar() {
   return (
     <aside style={styles.sidebar}>
@@ -176,6 +212,7 @@ export default function Sidebar() {
           <Settings size={16} strokeWidth={1.8} />
           Settings
         </NavLink>
+        <SignOutButton />
       </div>
     </aside>
   );
