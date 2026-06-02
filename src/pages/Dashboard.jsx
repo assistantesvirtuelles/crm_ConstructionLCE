@@ -14,7 +14,7 @@ import EmptyState from '../components/ui/EmptyState.jsx';
 
 const STAT_CARDS = [
   {
-    label: 'Total Leads',
+    label: 'Total des prospects',
     value: '0',
     icon: Users,
     color: '#63b3ed',
@@ -22,7 +22,7 @@ const STAT_CARDS = [
     change: null,
   },
   {
-    label: 'Active Deals',
+    label: 'Opportunités actives',
     value: '0',
     icon: Handshake,
     color: 'var(--orange)',
@@ -30,15 +30,15 @@ const STAT_CARDS = [
     change: null,
   },
   {
-    label: 'Revenue',
-    value: '$0',
+    label: 'Revenus',
+    value: '0 $',
     icon: DollarSign,
     color: '#48c78e',
     colorBg: 'rgba(72,199,142,0.10)',
     change: null,
   },
   {
-    label: 'Meetings This Week',
+    label: 'Rendez-vous cette semaine',
     value: '0',
     icon: CalendarDays,
     color: '#b794f4',
@@ -181,18 +181,18 @@ export default function Dashboard() {
           }}>
             <div>
               <div style={{ fontFamily: 'var(--font-display)', fontSize: '15px', fontWeight: 700, color: 'var(--text)', marginBottom: '2px' }}>
-                Recent Activity
+                Activité récente
               </div>
               <div style={{ fontFamily: 'var(--font-body)', fontSize: '12px', color: 'var(--muted)' }}>
-                Latest updates across your pipeline
+                Dernières mises à jour de votre pipeline
               </div>
             </div>
-            <Button variant="ghost" size="sm">View all</Button>
+            <Button variant="ghost" size="sm">Tout voir</Button>
           </div>
           <EmptyState
             icon={Activity}
-            title="No recent activity yet"
-            description="Actions like new leads, deal updates, and meetings will appear here as your pipeline grows."
+            title="Aucune activité récente"
+            description="Les actions comme les nouveaux prospects, les mises à jour d'opportunités et les rendez-vous apparaîtront ici au fur et à mesure que votre pipeline se développe."
           />
         </Card>
 
@@ -207,28 +207,28 @@ export default function Dashboard() {
             textTransform: 'uppercase',
             marginBottom: '2px',
           }}>
-            Quick Actions
+            Actions rapides
           </div>
           <QuickActionCard
             icon={Users}
-            label="Add a Lead"
-            description="Capture a new prospect"
+            label="Ajouter un prospect"
+            description="Enregistrer un nouveau prospect"
             color="#63b3ed"
             colorBg="rgba(99,179,237,0.10)"
             delay="360ms"
           />
           <QuickActionCard
             icon={Handshake}
-            label="Create a Deal"
-            description="Start tracking an opportunity"
+            label="Créer une opportunité"
+            description="Suivre une nouvelle opportunité"
             color="var(--orange)"
             colorBg="rgba(46,204,82,0.10)"
             delay="400ms"
           />
           <QuickActionCard
             icon={CalendarDays}
-            label="Schedule Meeting"
-            description="Book time with a contact"
+            label="Planifier un rendez-vous"
+            description="Réserver du temps avec un contact"
             color="#b794f4"
             colorBg="rgba(183,148,244,0.10)"
             delay="440ms"
@@ -252,20 +252,20 @@ export default function Dashboard() {
         }}>
           <div>
             <div style={{ fontFamily: 'var(--font-display)', fontSize: '15px', fontWeight: 700, color: 'var(--text)', marginBottom: '2px' }}>
-              Pipeline Overview
+              Aperçu du pipeline
             </div>
             <div style={{ fontFamily: 'var(--font-body)', fontSize: '12px', color: 'var(--muted)' }}>
-              Deal stages at a glance
+              Les étapes des opportunités en un coup d'œil
             </div>
           </div>
-          <Button variant="ghost" size="sm">Go to Deals</Button>
+          <Button variant="ghost" size="sm">Voir les opportunités</Button>
         </div>
         <div style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(5, 1fr)',
           gap: '0',
         }}>
-          {['Prospecting', 'Qualified', 'Proposal', 'Negotiation', 'Closed'].map((stage, i) => (
+          {['Prospection', 'Qualifié', 'Proposition', 'Négociation', 'Conclu'].map((stage, i) => (
             <div
               key={stage}
               style={{

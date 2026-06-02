@@ -56,7 +56,7 @@ export default function Login() {
     setSubmitting(true);
     const { error } = await signIn(email, password);
     if (error) {
-      setError(error.message || 'Unable to sign in. Please try again.');
+      setError(error.message || 'Connexion impossible. Veuillez réessayer.');
       setSubmitting(false);
     }
     // On success, the auth listener swaps the app over to the authed view,
@@ -123,23 +123,23 @@ export default function Login() {
             color: 'var(--muted)',
             margin: 0,
           }}>
-            Sign in to your workspace
+            Connectez-vous à votre espace de travail
           </p>
         </div>
 
         {/* Form */}
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
           <TextField
-            label="Email"
+            label="Courriel"
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="you@company.com"
+            placeholder="vous@entreprise.com"
             autoComplete="email"
             disabled={submitting}
           />
           <TextField
-            label="Password"
+            label="Mot de passe"
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
@@ -180,12 +180,12 @@ export default function Login() {
             {submitting ? (
               <>
                 <Loader2 size={16} style={{ animation: 'spin 0.7s linear infinite' }} />
-                Signing in…
+                Connexion…
               </>
             ) : (
               <>
                 <LogIn size={16} />
-                Sign In
+                Se connecter
               </>
             )}
           </button>

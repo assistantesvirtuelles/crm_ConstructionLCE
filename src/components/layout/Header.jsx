@@ -3,23 +3,23 @@ import { useLocation } from 'react-router-dom';
 import { Bell, Search, ChevronDown } from 'lucide-react';
 
 const PAGE_TITLES = {
-  '/dashboard': 'Dashboard',
-  '/leads': 'Leads',
+  '/dashboard': 'Tableau de bord',
+  '/leads': 'Prospects',
   '/contacts': 'Contacts',
-  '/deals': 'Deals',
-  '/meetings': 'Meetings',
-  '/email': 'Email',
-  '/settings': 'Settings',
+  '/deals': 'Opportunités',
+  '/meetings': 'Rendez-vous',
+  '/email': 'Courriels',
+  '/settings': 'Paramètres',
 };
 
 const PAGE_SUBTITLES = {
-  '/dashboard': "Here's what's happening today",
-  '/leads': 'Track and manage your pipeline',
-  '/contacts': 'Your network in one place',
-  '/deals': 'Monitor deals and revenue',
-  '/meetings': 'Scheduled calls and meetings',
-  '/email': 'Inbox and outreach',
-  '/settings': 'Preferences and configuration',
+  '/dashboard': "Voici ce qui se passe aujourd'hui",
+  '/leads': 'Suivez et gérez votre pipeline',
+  '/contacts': 'Votre réseau au même endroit',
+  '/deals': 'Suivez vos opportunités et vos revenus',
+  '/meetings': 'Appels et rendez-vous planifiés',
+  '/email': 'Boîte de réception et prospection',
+  '/settings': 'Préférences et configuration',
 };
 
 const styles = {
@@ -147,7 +147,7 @@ export default function Header() {
       <div style={styles.right}>
         <div style={styles.searchBox}>
           <Search size={13} color="var(--muted)" />
-          <span style={styles.searchText}>Search anything…</span>
+          <span style={styles.searchText}>Rechercher…</span>
         </div>
         <div style={styles.iconBtn}>
           <Bell size={15} />
@@ -155,7 +155,7 @@ export default function Header() {
         </div>
         <div style={styles.avatar}>
           <div style={styles.avatarImg}>N</div>
-          <span style={styles.avatarName}>You</span>
+          <span style={styles.avatarName}>Vous</span>
           <ChevronDown size={12} color="var(--muted)" />
         </div>
       </div>

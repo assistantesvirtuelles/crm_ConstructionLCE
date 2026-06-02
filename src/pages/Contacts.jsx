@@ -7,8 +7,9 @@ export default function Contacts() {
     <PlaceholderPage
       icon={Contact}
       title="Contacts"
-      description="Import or manually add contacts to grow your network."
-      ctaLabel="Add Contact"
+      description="Importez ou ajoutez manuellement des contacts pour développer votre réseau."
+      ctaLabel="Ajouter un contact"
+      emptyTitle="Aucun contact pour le moment"
     />
   );
 }

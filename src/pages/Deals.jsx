@@ -6,9 +6,10 @@ export default function Deals() {
   return (
     <PlaceholderPage
       icon={Handshake}
-      title="Deals"
-      description="Track opportunities from first contact to closed won."
-      ctaLabel="Create Deal"
+      title="Opportunités"
+      description="Suivez vos opportunités, du premier contact jusqu'à la conclusion."
+      ctaLabel="Créer une opportunité"
+      emptyTitle="Aucune opportunité pour le moment"
     />
   );
 }

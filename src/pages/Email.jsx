@@ -6,9 +6,10 @@ export default function Email() {
   return (
     <PlaceholderPage
       icon={Mail}
-      title="Email"
-      description="Connect your inbox to send and track emails from within the CRM."
-      ctaLabel="Compose Email"
+      title="Courriels"
+      description="Connectez votre boîte de réception pour envoyer et suivre vos courriels depuis le CRM."
+      ctaLabel="Rédiger un courriel"
+      emptyTitle="Aucun courriel pour le moment"
     />
   );
 }

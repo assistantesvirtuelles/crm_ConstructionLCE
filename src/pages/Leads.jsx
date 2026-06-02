@@ -6,9 +6,10 @@ export default function Leads() {
   return (
     <PlaceholderPage
       icon={Users}
-      title="Leads"
-      description="Add your first lead to start building your sales pipeline."
-      ctaLabel="Add Lead"
+      title="Prospects"
+      description="Ajoutez votre premier prospect pour commencer à construire votre pipeline de ventes."
+      ctaLabel="Ajouter un prospect"
+      emptyTitle="Aucun prospect pour le moment"
     />
   );
 }

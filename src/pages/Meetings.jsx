@@ -6,9 +6,10 @@ export default function Meetings() {
   return (
     <PlaceholderPage
       icon={CalendarDays}
-      title="Meetings"
-      description="Schedule and track calls and meetings with your contacts."
-      ctaLabel="Schedule Meeting"
+      title="Rendez-vous"
+      description="Planifiez et suivez vos appels et rendez-vous avec vos contacts."
+      ctaLabel="Planifier un rendez-vous"
+      emptyTitle="Aucun rendez-vous pour le moment"
     />
   );
 }

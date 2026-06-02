@@ -2,12 +2,12 @@ import React from 'react';
 import Card from '../components/ui/Card.jsx';
 
 const SECTIONS = [
-  { label: 'Profile', description: 'Your name, email, and avatar' },
-  { label: 'Workspace', description: 'Team name, logo, and plan details' },
-  { label: 'Integrations', description: 'Connect email, calendar, and tools' },
-  { label: 'Notifications', description: 'Configure alerts and digests' },
-  { label: 'Security', description: 'Password, 2FA, and active sessions' },
-  { label: 'Billing', description: 'Subscription and payment methods' },
+  { label: 'Profil', description: 'Votre nom, votre courriel et votre avatar' },
+  { label: 'Espace de travail', description: "Nom de l'équipe, logo et détails du forfait" },
+  { label: 'Intégrations', description: 'Connectez votre courriel, votre calendrier et vos outils' },
+  { label: 'Notifications', description: 'Configurez les alertes et les résumés' },
+  { label: 'Sécurité', description: 'Mot de passe, 2FA et sessions actives' },
+  { label: 'Facturation', description: 'Abonnement et moyens de paiement' },
 ];
 
 export default function Settings() {

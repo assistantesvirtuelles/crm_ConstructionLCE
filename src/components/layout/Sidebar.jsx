@@ -14,12 +14,12 @@ import {
 import { useAuth } from '../../context/AuthContext.jsx';
 
 const NAV_ITEMS = [
-  { label: 'Dashboard', icon: LayoutDashboard, to: '/dashboard' },
-  { label: 'Leads', icon: Users, to: '/leads' },
+  { label: 'Tableau de bord', icon: LayoutDashboard, to: '/dashboard' },
+  { label: 'Prospects', icon: Users, to: '/leads' },
   { label: 'Contacts', icon: Contact, to: '/contacts' },
-  { label: 'Deals', icon: Handshake, to: '/deals' },
-  { label: 'Meetings', icon: CalendarDays, to: '/meetings' },
-  { label: 'Email', icon: Mail, to: '/email' },
+  { label: 'Opportunités', icon: Handshake, to: '/deals' },
+  { label: 'Rendez-vous', icon: CalendarDays, to: '/meetings' },
+  { label: 'Courriels', icon: Mail, to: '/email' },
 ];
 
 const styles = {
@@ -163,7 +163,7 @@ function SignOutButton() {
       }}
     >
       <LogOut size={16} strokeWidth={1.8} />
-      Sign out
+      Déconnexion
     </button>
   );
 }
@@ -182,11 +182,11 @@ export default function Sidebar() {
       </div>
 
       <nav style={styles.nav}>
-        <div style={styles.sectionLabel}>Main</div>
+        <div style={styles.sectionLabel}>Principal</div>
         {NAV_ITEMS.slice(0, 4).map((item) => (
           <NavItem key={item.to} item={item} />
         ))}
-        <div style={styles.sectionLabel}>Communicate</div>
+        <div style={styles.sectionLabel}>Communication</div>
         {NAV_ITEMS.slice(4).map((item) => (
           <NavItem key={item.to} item={item} />
         ))}
@@ -211,7 +211,7 @@ export default function Sidebar() {
           })}
         >
           <Settings size={16} strokeWidth={1.8} />
-          Settings
+          Paramètres
         </NavLink>
         <SignOutButton />
       </div>
