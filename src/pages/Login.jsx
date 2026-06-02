@@ -115,7 +115,7 @@ export default function Login() {
             backgroundClip: 'text',
             margin: 0,
           }}>
-            VTM CRM
+            Construction LCE
           </h1>
           <p style={{
             fontFamily: 'var(--font-body)',

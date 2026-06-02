@@ -135,7 +135,7 @@ const styles = {
 
 export default function Header() {
   const { pathname } = useLocation();
-  const title = PAGE_TITLES[pathname] ?? 'ClaudeCRM';
+  const title = PAGE_TITLES[pathname] ?? 'Construction LCE';
   const subtitle = PAGE_SUBTITLES[pathname] ?? '';
 
   return (

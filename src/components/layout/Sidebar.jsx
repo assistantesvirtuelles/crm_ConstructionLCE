@@ -55,9 +55,10 @@ const styles = {
   logoText: {
     fontFamily: 'var(--font-display)',
     fontWeight: 700,
-    fontSize: '16px',
+    fontSize: '15px',
     color: 'var(--text)',
     letterSpacing: '-0.3px',
+    lineHeight: 1.15,
   },
   logoSub: {
     fontFamily: 'var(--font-body)',
@@ -175,8 +176,8 @@ export default function Sidebar() {
           <Zap size={16} color="#fff" strokeWidth={2.5} />
         </div>
         <div>
-          <div style={styles.logoText}>ClaudeCRM</div>
-          <div style={styles.logoSub}>Workspace</div>
+          <div style={styles.logoText}>Construction LCE</div>
+          <div style={styles.logoSub}>CRM</div>
         </div>
       </div>
 
