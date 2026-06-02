@@ -1,0 +1,182 @@
+﻿import React, { useState } from 'react';
+import { NavLink, useLocation } from 'react-router-dom';
+import {
+  LayoutDashboard,
+  Users,
+  Contact,
+  Handshake,
+  CalendarDays,
+  Mail,
+  Settings,
+  Zap,
+} from 'lucide-react';
+
+const NAV_ITEMS = [
+  { label: 'Dashboard', icon: LayoutDashboard, to: '/dashboard' },
+  { label: 'Leads', icon: Users, to: '/leads' },
+  { label: 'Contacts', icon: Contact, to: '/contacts' },
+  { label: 'Deals', icon: Handshake, to: '/deals' },
+  { label: 'Meetings', icon: CalendarDays, to: '/meetings' },
+  { label: 'Email', icon: Mail, to: '/email' },
+];
+
+const styles = {
+  sidebar: {
+    width: '220px',
+    flexShrink: 0,
+    background: 'var(--surface)',
+    borderRight: '1px solid var(--border)',
+    display: 'flex',
+    flexDirection: 'column',
+    padding: '0',
+    position: 'relative',
+    zIndex: 10,
+  },
+  logo: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '10px',
+    padding: '24px 20px 20px',
+    borderBottom: '1px solid var(--border)',
+    marginBottom: '8px',
+  },
+  logoIcon: {
+    width: '32px',
+    height: '32px',
+    borderRadius: '8px',
+    background: 'linear-gradient(135deg, var(--orange), var(--orange-dark))',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexShrink: 0,
+  },
+  logoText: {
+    fontFamily: 'var(--font-display)',
+    fontWeight: 700,
+    fontSize: '16px',
+    color: 'var(--text)',
+    letterSpacing: '-0.3px',
+  },
+  logoSub: {
+    fontFamily: 'var(--font-body)',
+    fontSize: '10px',
+    color: 'var(--muted)',
+    letterSpacing: '0.5px',
+    textTransform: 'uppercase',
+    marginTop: '-2px',
+  },
+  nav: {
+    flex: 1,
+    padding: '4px 10px',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '2px',
+  },
+  sectionLabel: {
+    fontFamily: 'var(--font-display)',
+    fontSize: '10px',
+    fontWeight: 600,
+    color: 'var(--muted)',
+    letterSpacing: '0.8px',
+    textTransform: 'uppercase',
+    padding: '12px 10px 6px',
+  },
+  footer: {
+    padding: '10px',
+    borderTop: '1px solid var(--border)',
+  },
+};
+
+function NavItem({ item }) {
+  const Icon = item.icon;
+  return (
+    <NavLink
+      to={item.to}
+      style={({ isActive }) => ({
+        display: 'flex',
+        alignItems: 'center',
+        gap: '10px',
+        padding: '9px 12px',
+        borderRadius: 'var(--radius-md)',
+        textDecoration: 'none',
+        fontFamily: 'var(--font-display)',
+        fontSize: '13.5px',
+        fontWeight: isActive ? 600 : 500,
+        color: isActive ? 'var(--orange)' : 'var(--muted)',
+        background: isActive ? 'rgba(46,204,82, 0.10)' : 'transparent',
+        transition: 'all var(--transition)',
+        cursor: 'pointer',
+        position: 'relative',
+      })}
+    >
+      {({ isActive }) => (
+        <>
+          {isActive && (
+            <span style={{
+              position: 'absolute',
+              left: 0,
+              top: '50%',
+              transform: 'translateY(-50%)',
+              width: '3px',
+              height: '18px',
+              background: 'var(--orange)',
+              borderRadius: '0 2px 2px 0',
+            }} />
+          )}
+          <Icon size={16} strokeWidth={isActive ? 2.2 : 1.8} />
+          {item.label}
+        </>
+      )}
+    </NavLink>
+  );
+}
+
+export default function Sidebar() {
+  return (
+    <aside style={styles.sidebar}>
+      <div style={styles.logo}>
+        <div style={styles.logoIcon}>
+          <Zap size={16} color="#fff" strokeWidth={2.5} />
+        </div>
+        <div>
+          <div style={styles.logoText}>ClaudeCRM</div>
+          <div style={styles.logoSub}>Workspace</div>
+        </div>
+      </div>
+
+      <nav style={styles.nav}>
+        <div style={styles.sectionLabel}>Main</div>
+        {NAV_ITEMS.slice(0, 4).map((item) => (
+          <NavItem key={item.to} item={item} />
+        ))}
+        <div style={styles.sectionLabel}>Communicate</div>
+        {NAV_ITEMS.slice(4).map((item) => (
+          <NavItem key={item.to} item={item} />
+        ))}
+      </nav>
+
+      <div style={styles.footer}>
+        <NavLink
+          to="/settings"
+          style={({ isActive }) => ({
+            display: 'flex',
+            alignItems: 'center',
+            gap: '10px',
+            padding: '9px 12px',
+            borderRadius: 'var(--radius-md)',
+            textDecoration: 'none',
+            fontFamily: 'var(--font-display)',
+            fontSize: '13.5px',
+            fontWeight: isActive ? 600 : 500,
+            color: isActive ? 'var(--orange)' : 'var(--muted)',
+            background: isActive ? 'rgba(46,204,82, 0.10)' : 'transparent',
+            transition: 'all var(--transition)',
+          })}
+        >
+          <Settings size={16} strokeWidth={1.8} />
+          Settings
+        </NavLink>
+      </div>
+    </aside>
+  );
+}
