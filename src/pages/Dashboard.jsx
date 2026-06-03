@@ -12,7 +12,9 @@ import Card from '../components/ui/Card.jsx';
 import Button from '../components/ui/Button.jsx';
 import EmptyState from '../components/ui/EmptyState.jsx';
 import LeadFormModal from '../components/leads/LeadFormModal.jsx';
+import DealFormModal from '../components/deals/DealFormModal.jsx';
 import { fetchLeadStats, LEAD_STATUSES } from '../lib/leads.js';
+import { fetchDealStats, formatCurrency } from '../lib/deals.js';
 
 const STAT_CARDS = [
   {
@@ -136,13 +138,16 @@ function QuickActionCard({ icon: Icon, label, description, color, colorBg, delay
 export default function Dashboard() {
   const navigate = useNavigate();
   const [showAddLead, setShowAddLead] = useState(false);
+  const [showAddDeal, setShowAddDeal] = useState(false);
   const [stats, setStats] = useState(null);
+  const [dealStats, setDealStats] = useState(null);
   const [statsLoading, setStatsLoading] = useState(true);
 
   const loadStats = async () => {
     setStatsLoading(true);
-    const res = await fetchLeadStats();
-    if (!res.error) setStats(res);
+    const [leadRes, dealRes] = await Promise.all([fetchLeadStats(), fetchDealStats()]);
+    if (!leadRes.error) setStats(leadRes);
+    if (!dealRes.error) setDealStats(dealRes);
     setStatsLoading(false);
   };
 
@@ -151,8 +156,11 @@ export default function Dashboard() {
   }, []);
 
   const statValue = (card) => {
-    if (card.key === 'leads') return statsLoading ? '…' : String(stats?.total ?? 0);
-    return card.value; // deals / revenue / meetings: no backing table yet
+    if (statsLoading) return '…';
+    if (card.key === 'leads') return String(stats?.total ?? 0);
+    if (card.key === 'deals') return String(dealStats?.active ?? 0);
+    if (card.key === 'revenue') return formatCurrency(dealStats?.revenue ?? 0);
+    return card.value; // meetings: no backing table yet
   };
 
   const total = stats?.total ?? 0;
@@ -235,6 +243,7 @@ export default function Dashboard() {
             color="var(--orange)"
             colorBg="rgba(46,204,82,0.10)"
             delay="400ms"
+            onClick={() => setShowAddDeal(true)}
           />
           <QuickActionCard
             icon={CalendarDays}
@@ -320,6 +329,11 @@ export default function Dashboard() {
         open={showAddLead}
         onClose={() => setShowAddLead(false)}
         onCreated={() => navigate('/leads')}
+      />
+      <DealFormModal
+        open={showAddDeal}
+        onClose={() => setShowAddDeal(false)}
+        onCreated={() => navigate('/deals')}
       />
     </div>
   );

@@ -1,9 +1,10 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Contact, Plus, Search, Loader2 } from 'lucide-react';
+import { Contact, Plus, Upload, Search, Loader2 } from 'lucide-react';
 import Card from '../components/ui/Card.jsx';
 import Button from '../components/ui/Button.jsx';
 import EmptyState from '../components/ui/EmptyState.jsx';
 import ContactFormModal from '../components/contacts/ContactFormModal.jsx';
+import ImportContactsModal from '../components/contacts/ImportContactsModal.jsx';
 import { fetchContacts } from '../lib/contacts.js';
 
 function formatDate(value) {
@@ -31,6 +32,7 @@ export default function Contacts() {
   const [query, setQuery] = useState('');
   const [searchFocused, setSearchFocused] = useState(false);
   const [showAdd, setShowAdd] = useState(false);
+  const [showImport, setShowImport] = useState(false);
 
   const load = async () => {
     setLoading(true);
@@ -98,9 +100,14 @@ export default function Contacts() {
             />
           </div>
 
-          <Button size="sm" icon={<Plus />} onClick={() => setShowAdd(true)}>
-            Ajouter un contact
-          </Button>
+          <div style={{ display: 'flex', gap: '8px' }}>
+            <Button variant="secondary" size="sm" icon={<Upload />} onClick={() => setShowImport(true)}>
+              Importer CSV
+            </Button>
+            <Button size="sm" icon={<Plus />} onClick={() => setShowAdd(true)}>
+              Ajouter un contact
+            </Button>
+          </div>
         </div>
 
         {/* Body */}
@@ -122,11 +129,16 @@ export default function Contacts() {
           <EmptyState
             icon={Contact}
             title="Aucun contact pour le moment"
-            description="Ajoutez votre premier contact, ou convertissez un prospect en contact depuis la page Prospects."
+            description="Ajoutez votre premier contact, importez une liste CSV, ou convertissez un prospect en contact depuis la page Prospects."
             action={
-              <Button size="sm" icon={<Plus />} onClick={() => setShowAdd(true)} style={{ marginTop: '4px' }}>
-                Ajouter un contact
-              </Button>
+              <div style={{ display: 'flex', gap: '10px', marginTop: '4px' }}>
+                <Button size="sm" variant="secondary" icon={<Upload />} onClick={() => setShowImport(true)}>
+                  Importer CSV
+                </Button>
+                <Button size="sm" icon={<Plus />} onClick={() => setShowAdd(true)}>
+                  Ajouter un contact
+                </Button>
+              </div>
             }
           />
         ) : (
@@ -183,6 +195,7 @@ export default function Contacts() {
       </Card>
 
       <ContactFormModal open={showAdd} onClose={() => setShowAdd(false)} onCreated={load} />
+      <ImportContactsModal open={showImport} onClose={() => setShowImport(false)} onImported={load} />
     </div>
   );
 }

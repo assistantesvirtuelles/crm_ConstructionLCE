@@ -1,4 +1,5 @@
 import { supabase } from './supabase.js';
+import { normalizeKey, buildAliasLookup } from './csv.js';
 
 // Columns the app is allowed to write to crm_contacts.
 const WRITABLE_COLUMNS = ['name', 'email', 'phone', 'company', 'title', 'industry', 'notes'];
@@ -26,6 +27,33 @@ export async function fetchContacts() {
 
 export async function createContact(contact) {
   return supabase.from('crm_contacts').insert(cleanContact(contact)).select().single();
+}
+
+export async function bulkInsertContacts(contacts) {
+  return supabase.from('crm_contacts').insert(contacts.map(cleanContact)).select();
+}
+
+// ── CSV mapping ────────────────────────────────────────────
+const CONTACT_HEADER_ALIASES = {
+  name: ['name', 'nom', 'full name', 'nom complet', 'contact'],
+  email: ['email', 'e-mail', 'courriel', 'adresse courriel', 'mail'],
+  phone: ['phone', 'telephone', 'tel', 'numero', 'numero de telephone', 'mobile', 'cellulaire'],
+  company: ['company', 'entreprise', 'societe', 'compagnie', 'organisation'],
+  title: ['title', 'titre', 'poste', 'fonction', 'job title'],
+  industry: ['industry', 'industrie', 'secteur', "secteur d'activite", 'domaine'],
+  notes: ['notes', 'note', 'commentaires', 'commentaire', 'remarques'],
+};
+
+const ALIAS_LOOKUP = buildAliasLookup(CONTACT_HEADER_ALIASES);
+
+export function mapCsvRowToContact(row) {
+  const contact = {};
+  for (const [header, value] of Object.entries(row)) {
+    const field = ALIAS_LOOKUP[normalizeKey(header)];
+    if (!field) continue;
+    contact[field] = typeof value === 'string' ? value.trim() : value;
+  }
+  return contact;
 }
 
 // Create a contact from a prospect's info, then mark the prospect as "converted".
