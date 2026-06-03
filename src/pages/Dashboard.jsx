@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+﻿import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Users,
@@ -13,39 +13,40 @@ import Card from '../components/ui/Card.jsx';
 import Button from '../components/ui/Button.jsx';
 import EmptyState from '../components/ui/EmptyState.jsx';
 import LeadFormModal from '../components/leads/LeadFormModal.jsx';
+import { fetchLeadStats, LEAD_STATUSES } from '../lib/leads.js';
 
 const STAT_CARDS = [
   {
+    key: 'leads',
     label: 'Total des prospects',
     value: '0',
     icon: Users,
     color: '#63b3ed',
     colorBg: 'rgba(99,179,237,0.10)',
-    change: null,
   },
   {
+    key: 'deals',
     label: 'Opportunités actives',
     value: '0',
     icon: Handshake,
     color: 'var(--orange)',
     colorBg: 'rgba(46,204,82,0.10)',
-    change: null,
   },
   {
+    key: 'revenue',
     label: 'Revenus',
     value: '0 $',
     icon: DollarSign,
     color: '#48c78e',
     colorBg: 'rgba(72,199,142,0.10)',
-    change: null,
   },
   {
+    key: 'meetings',
     label: 'Rendez-vous cette semaine',
     value: '0',
     icon: CalendarDays,
     color: '#b794f4',
     colorBg: 'rgba(183,148,244,0.10)',
-    change: null,
   },
 ];
 
@@ -152,6 +153,26 @@ function QuickActionCard({ icon: Icon, label, description, color, colorBg, delay
 export default function Dashboard() {
   const navigate = useNavigate();
   const [showAddLead, setShowAddLead] = useState(false);
+  const [stats, setStats] = useState(null);
+  const [statsLoading, setStatsLoading] = useState(true);
+
+  const loadStats = async () => {
+    setStatsLoading(true);
+    const res = await fetchLeadStats();
+    if (!res.error) setStats(res);
+    setStatsLoading(false);
+  };
+
+  useEffect(() => {
+    loadStats();
+  }, []);
+
+  const statValue = (card) => {
+    if (card.key === 'leads') return statsLoading ? '…' : String(stats?.total ?? 0);
+    return card.value; // deals / revenue / meetings: no backing table yet
+  };
+
+  const total = stats?.total ?? 0;
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
@@ -163,7 +184,7 @@ export default function Dashboard() {
         gap: '16px',
       }}>
         {STAT_CARDS.map((card, i) => (
-          <StatCard key={card.label} card={card} index={i} />
+          <StatCard key={card.label} card={{ ...card, value: statValue(card) }} index={i} />
         ))}
       </section>
 
@@ -243,7 +264,7 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Pipeline Overview placeholder */}
+      {/* Prospects by status — live counts */}
       <Card style={{
         padding: '0',
         overflow: 'hidden',
@@ -259,51 +280,56 @@ export default function Dashboard() {
         }}>
           <div>
             <div style={{ fontFamily: 'var(--font-display)', fontSize: '15px', fontWeight: 700, color: 'var(--text)', marginBottom: '2px' }}>
-              Aperçu du pipeline
+              Prospects par statut
             </div>
             <div style={{ fontFamily: 'var(--font-body)', fontSize: '12px', color: 'var(--muted)' }}>
-              Les étapes des opportunités en un coup d'œil
+              Répartition de vos prospects par statut
             </div>
           </div>
-          <Button variant="ghost" size="sm">Voir les opportunités</Button>
+          <Button variant="ghost" size="sm" onClick={() => navigate('/leads')}>Voir les prospects</Button>
         </div>
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(5, 1fr)',
+          gridTemplateColumns: `repeat(${LEAD_STATUSES.length}, 1fr)`,
           gap: '0',
         }}>
-          {['Prospection', 'Qualifié', 'Proposition', 'Négociation', 'Conclu'].map((stage, i) => (
-            <div
-              key={stage}
-              style={{
-                padding: '20px 24px',
-                borderRight: i < 4 ? '1px solid var(--border)' : 'none',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '8px',
-              }}
-            >
-              <div style={{ fontFamily: 'var(--font-display)', fontSize: '11.5px', fontWeight: 600, color: 'var(--muted)', letterSpacing: '0.4px', textTransform: 'uppercase' }}>
-                {stage}
-              </div>
-              <div style={{ fontFamily: 'var(--font-display)', fontSize: '24px', fontWeight: 800, color: 'var(--text)', letterSpacing: '-0.5px' }}>
-                0
-              </div>
-              <div style={{
-                height: '3px',
-                borderRadius: '2px',
-                background: 'var(--surface-2)',
-                overflow: 'hidden',
-              }}>
+          {LEAD_STATUSES.map((status, i) => {
+            const count = stats?.byStatus?.[status.value] ?? 0;
+            const pct = total > 0 ? Math.round((count / total) * 100) : 0;
+            return (
+              <div
+                key={status.value}
+                style={{
+                  padding: '20px 24px',
+                  borderRight: i < LEAD_STATUSES.length - 1 ? '1px solid var(--border)' : 'none',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '8px',
+                }}
+              >
+                <div style={{ fontFamily: 'var(--font-display)', fontSize: '11.5px', fontWeight: 600, color: 'var(--muted)', letterSpacing: '0.4px', textTransform: 'uppercase' }}>
+                  {status.label}
+                </div>
+                <div style={{ fontFamily: 'var(--font-display)', fontSize: '24px', fontWeight: 800, color: 'var(--text)', letterSpacing: '-0.5px' }}>
+                  {statsLoading ? '…' : count}
+                </div>
                 <div style={{
-                  height: '100%',
-                  width: '0%',
-                  background: 'linear-gradient(90deg, var(--orange), var(--orange-dark))',
+                  height: '3px',
                   borderRadius: '2px',
-                }} />
+                  background: 'var(--surface-2)',
+                  overflow: 'hidden',
+                }}>
+                  <div style={{
+                    height: '100%',
+                    width: `${pct}%`,
+                    background: 'linear-gradient(90deg, var(--orange), var(--orange-dark))',
+                    borderRadius: '2px',
+                    transition: 'width 0.4s ease',
+                  }} />
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </Card>
 

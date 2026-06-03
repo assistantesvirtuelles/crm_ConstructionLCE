@@ -46,6 +46,18 @@ export async function fetchLeads() {
     .order('created_at', { ascending: false });
 }
 
+// Live counts for the dashboard: total leads + a tally per status.
+export async function fetchLeadStats() {
+  const { data, error } = await supabase.from('crm_leads').select('status');
+  if (error) return { error };
+  const byStatus = {};
+  for (const s of LEAD_STATUSES) byStatus[s.value] = 0;
+  for (const row of data) {
+    byStatus[row.status] = (byStatus[row.status] ?? 0) + 1;
+  }
+  return { total: data.length, byStatus };
+}
+
 export async function createLead(lead) {
   return supabase.from('crm_leads').insert(cleanLead(lead)).select().single();
 }
