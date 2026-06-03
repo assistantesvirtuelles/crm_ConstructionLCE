@@ -6,7 +6,6 @@ import {
   DollarSign,
   CalendarDays,
   Activity,
-  TrendingUp,
   ArrowUpRight,
 } from 'lucide-react';
 import Card from '../components/ui/Card.jsx';
@@ -73,22 +72,6 @@ function StatCard({ card, index }) {
           justifyContent: 'center',
         }}>
           <Icon size={18} color={card.color} strokeWidth={1.8} />
-        </div>
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '4px',
-          fontSize: '11px',
-          fontFamily: 'var(--font-display)',
-          fontWeight: 600,
-          color: 'var(--muted)',
-          background: 'var(--surface-2)',
-          padding: '3px 8px',
-          borderRadius: '6px',
-          border: '1px solid var(--border)',
-        }}>
-          <TrendingUp size={10} />
-          â€” %
         </div>
       </div>
       <div style={{
