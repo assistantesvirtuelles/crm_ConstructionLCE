@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Users, Plus, Upload, Search, Loader2, UserPlus, Check, CheckCircle2 } from 'lucide-react';
+import { Users, Plus, Upload, Search, Loader2, UserPlus, Check, CheckCircle2, List, LayoutGrid } from 'lucide-react';
 import Card from '../components/ui/Card.jsx';
 import Button from '../components/ui/Button.jsx';
 import StatusPill from '../components/ui/StatusPill.jsx';
@@ -8,8 +8,43 @@ import EmptyState from '../components/ui/EmptyState.jsx';
 import Modal from '../components/ui/Modal.jsx';
 import LeadFormModal from '../components/leads/LeadFormModal.jsx';
 import ImportLeadsModal from '../components/leads/ImportLeadsModal.jsx';
-import { fetchLeads, getStatusMeta } from '../lib/leads.js';
+import LeadsPipeline from '../components/leads/LeadsPipeline.jsx';
+import { fetchLeads, getStatusMeta, updateLeadStatus } from '../lib/leads.js';
 import { convertLeadToContact } from '../lib/contacts.js';
+
+function ViewToggle({ view, setView }) {
+  const btn = (key, label, Icon) => {
+    const active = view === key;
+    return (
+      <button
+        onClick={() => setView(key)}
+        style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: '6px',
+          padding: '7px 12px',
+          border: 'none',
+          background: active ? 'rgba(46,204,82,0.12)' : 'transparent',
+          color: active ? 'var(--orange)' : 'var(--muted)',
+          fontFamily: 'var(--font-display)',
+          fontSize: '12.5px',
+          fontWeight: 600,
+          cursor: 'pointer',
+        }}
+      >
+        <Icon size={14} />
+        {label}
+      </button>
+    );
+  };
+  return (
+    <div style={{ display: 'flex', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', overflow: 'hidden', background: 'var(--surface-2)' }}>
+      {btn('pipeline', 'Pipeline', LayoutGrid)}
+      <div style={{ width: '1px', background: 'var(--border)' }} />
+      {btn('list', 'Liste', List)}
+    </div>
+  );
+}
 
 function formatDate(value) {
   if (!value) return '—';
@@ -42,6 +77,17 @@ export default function Leads() {
   const [converting, setConverting] = useState(false);
   const [convertError, setConvertError] = useState('');
   const [convertDone, setConvertDone] = useState(false);
+  const [view, setView] = useState('pipeline');
+
+  const moveLead = async (id, newStatus) => {
+    const lead = leads.find((l) => l.id === id);
+    if (!lead || lead.status === newStatus) return;
+    const previous = leads;
+    // optimistic update
+    setLeads((ls) => ls.map((l) => (l.id === id ? { ...l, status: newStatus } : l)));
+    const { error } = await updateLeadStatus(id, newStatus);
+    if (error) setLeads(previous); // revert on failure
+  };
 
   const closeConvert = () => {
     if (converting) return;
@@ -132,7 +178,8 @@ export default function Leads() {
             />
           </div>
 
-          <div style={{ display: 'flex', gap: '8px' }}>
+          <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+            <ViewToggle view={view} setView={setView} />
             <Button variant="secondary" size="sm" icon={<Upload />} onClick={() => setShowImport(true)}>
               Importer CSV
             </Button>
@@ -175,6 +222,8 @@ export default function Leads() {
               </div>
             }
           />
+        ) : view === 'pipeline' ? (
+          <LeadsPipeline leads={filtered} onMove={moveLead} />
         ) : (
           <div>
             {/* Column headers */}

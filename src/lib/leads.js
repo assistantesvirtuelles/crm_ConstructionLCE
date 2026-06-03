@@ -62,6 +62,10 @@ export async function createLead(lead) {
   return supabase.from('crm_leads').insert(cleanLead(lead)).select().single();
 }
 
+export async function updateLeadStatus(id, status) {
+  return supabase.from('crm_leads').update({ status }).eq('id', id).select().single();
+}
+
 export async function bulkInsertLeads(leads) {
   return supabase.from('crm_leads').insert(leads.map(cleanLead)).select();
 }
