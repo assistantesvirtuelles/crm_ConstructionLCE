@@ -1,12 +1,15 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Users, Plus, Upload, Search, Loader2 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Users, Plus, Upload, Search, Loader2, UserPlus, Check, CheckCircle2 } from 'lucide-react';
 import Card from '../components/ui/Card.jsx';
 import Button from '../components/ui/Button.jsx';
 import StatusPill from '../components/ui/StatusPill.jsx';
 import EmptyState from '../components/ui/EmptyState.jsx';
+import Modal from '../components/ui/Modal.jsx';
 import LeadFormModal from '../components/leads/LeadFormModal.jsx';
 import ImportLeadsModal from '../components/leads/ImportLeadsModal.jsx';
 import { fetchLeads, getStatusMeta } from '../lib/leads.js';
+import { convertLeadToContact } from '../lib/contacts.js';
 
 function formatDate(value) {
   if (!value) return '—';
@@ -34,6 +37,34 @@ export default function Leads() {
   const [searchFocused, setSearchFocused] = useState(false);
   const [showAdd, setShowAdd] = useState(false);
   const [showImport, setShowImport] = useState(false);
+  const navigate = useNavigate();
+  const [convertTarget, setConvertTarget] = useState(null);
+  const [converting, setConverting] = useState(false);
+  const [convertError, setConvertError] = useState('');
+  const [convertDone, setConvertDone] = useState(false);
+
+  const closeConvert = () => {
+    if (converting) return;
+    setConvertTarget(null);
+    setConverting(false);
+    setConvertError('');
+    setConvertDone(false);
+  };
+
+  const doConvert = async () => {
+    if (!convertTarget) return;
+    setConverting(true);
+    setConvertError('');
+    const { error } = await convertLeadToContact(convertTarget);
+    if (error) {
+      setConvertError(error.message || "Une erreur s'est produite lors de la conversion.");
+      setConverting(false);
+      return;
+    }
+    setConverting(false);
+    setConvertDone(true);
+    load();
+  };
 
   const load = async () => {
     setLoading(true);
@@ -161,6 +192,7 @@ export default function Leads() {
                   {col.label}
                 </div>
               ))}
+              <div style={{ width: '150px', flexShrink: 0 }} />
             </div>
 
             {/* Rows */}
@@ -194,6 +226,17 @@ export default function Leads() {
                   <div style={{ flex: 1, color: 'var(--muted)', whiteSpace: 'nowrap' }}>
                     {formatDate(lead.created_at)}
                   </div>
+                  <div style={{ width: '150px', flexShrink: 0, display: 'flex', justifyContent: 'flex-end' }}>
+                    {lead.status === 'converted' ? (
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', fontSize: '12px', color: 'var(--muted)', fontFamily: 'var(--font-display)', fontWeight: 600 }}>
+                        <Check size={13} color="#48c78e" /> Converti
+                      </span>
+                    ) : (
+                      <Button variant="ghost" size="sm" icon={<UserPlus />} onClick={() => setConvertTarget(lead)}>
+                        Convertir
+                      </Button>
+                    )}
+                  </div>
                 </div>
               );
             })}
@@ -215,6 +258,65 @@ export default function Leads() {
 
       <LeadFormModal open={showAdd} onClose={() => setShowAdd(false)} onCreated={load} />
       <ImportLeadsModal open={showImport} onClose={() => setShowImport(false)} onImported={load} />
+
+      <Modal
+        open={!!convertTarget}
+        onClose={closeConvert}
+        title="Convertir en contact"
+        width={460}
+        footer={
+          convertDone ? (
+            <>
+              <Button variant="secondary" size="sm" onClick={closeConvert}>Fermer</Button>
+              <Button size="sm" onClick={() => navigate('/contacts')}>Voir les contacts</Button>
+            </>
+          ) : (
+            <>
+              <Button variant="secondary" size="sm" onClick={closeConvert} disabled={converting}>Annuler</Button>
+              <Button size="sm" onClick={doConvert} disabled={converting}>
+                {converting ? 'Conversion…' : 'Convertir'}
+              </Button>
+            </>
+          )
+        }
+      >
+        {convertDone ? (
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px', padding: '8px 0' }}>
+            <div style={{
+              width: '48px', height: '48px', borderRadius: '14px',
+              background: 'rgba(72,199,142,0.12)', border: '1px solid rgba(72,199,142,0.25)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}>
+              <CheckCircle2 size={24} color="#48c78e" />
+            </div>
+            <div style={{ fontFamily: 'var(--font-display)', fontSize: '15px', fontWeight: 600, color: 'var(--text)', textAlign: 'center' }}>
+              {convertTarget?.name} a été converti en contact
+            </div>
+            <div style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--muted)', textAlign: 'center' }}>
+              Le prospect est maintenant marqué « Converti ».
+            </div>
+          </div>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <div style={{ fontFamily: 'var(--font-body)', fontSize: '13.5px', color: 'var(--text)', lineHeight: 1.6 }}>
+              Convertir <strong>{convertTarget?.name}</strong> en contact ?
+            </div>
+            <div style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--muted)', lineHeight: 1.6 }}>
+              Un nouveau contact sera créé à partir des informations de ce prospect (nom, courriel,
+              téléphone, entreprise, titre, notes), et le prospect sera marqué comme « Converti ».
+            </div>
+            {convertError && (
+              <div style={{
+                padding: '10px 14px', borderRadius: 'var(--radius-md)',
+                background: 'rgba(252,129,129,0.10)', border: '1px solid rgba(252,129,129,0.25)',
+                color: '#fc8181', fontFamily: 'var(--font-body)', fontSize: '13px',
+              }}>
+                {convertError}
+              </div>
+            )}
+          </div>
+        )}
+      </Modal>
     </div>
   );
 }
