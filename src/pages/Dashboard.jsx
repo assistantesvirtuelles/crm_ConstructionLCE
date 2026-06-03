@@ -15,7 +15,8 @@ import LeadFormModal from '../components/leads/LeadFormModal.jsx';
 import DealFormModal from '../components/deals/DealFormModal.jsx';
 import { fetchLeadStats, LEAD_STATUSES } from '../lib/leads.js';
 import { fetchDealStats, formatCurrency } from '../lib/deals.js';
-import { BOOKING_URL } from '../config.js';
+import { fetchUserSettings } from '../lib/settings.js';
+import { useAuth } from '../context/AuthContext.jsx';
 
 const STAT_CARDS = [
   {
@@ -138,11 +139,13 @@ function QuickActionCard({ icon: Icon, label, description, color, colorBg, delay
 
 export default function Dashboard() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [showAddLead, setShowAddLead] = useState(false);
   const [showAddDeal, setShowAddDeal] = useState(false);
   const [stats, setStats] = useState(null);
   const [dealStats, setDealStats] = useState(null);
   const [statsLoading, setStatsLoading] = useState(true);
+  const [bookingUrl, setBookingUrl] = useState('');
 
   const loadStats = async () => {
     setStatsLoading(true);
@@ -150,11 +153,23 @@ export default function Dashboard() {
     if (!leadRes.error) setStats(leadRes);
     if (!dealRes.error) setDealStats(dealRes);
     setStatsLoading(false);
+    if (user) {
+      const { data } = await fetchUserSettings(user.id);
+      setBookingUrl(data?.booking_url || '');
+    }
   };
 
   useEffect(() => {
     loadStats();
-  }, []);
+  }, [user]);
+
+  const onScheduleMeeting = () => {
+    if (bookingUrl) {
+      window.open(bookingUrl, '_blank', 'noopener,noreferrer');
+    } else {
+      navigate('/meetings');
+    }
+  };
 
   const statValue = (card) => {
     if (statsLoading) return '…';
@@ -253,7 +268,7 @@ export default function Dashboard() {
             color="#b794f4"
             colorBg="rgba(183,148,244,0.10)"
             delay="440ms"
-            onClick={() => window.open(BOOKING_URL, '_blank', 'noopener,noreferrer')}
+            onClick={onScheduleMeeting}
           />
         </div>
       </div>
