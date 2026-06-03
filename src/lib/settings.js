@@ -23,6 +23,11 @@ export async function upsertUserSettings(userId, values) {
     .single();
 }
 
+// Remove the current user's settings row (disconnect their calendar/booking).
+export async function deleteUserSettings(userId) {
+  return supabase.from('crm_user_settings').delete().eq('user_id', userId);
+}
+
 // Accept either a bare calendar ID/email OR a pasted Google Calendar URL,
 // and return just the calendar ID. This makes the Settings field forgiving:
 // pasting the full embed URL (…/embed?src=you%40domain.ca&ctz=…) still works.

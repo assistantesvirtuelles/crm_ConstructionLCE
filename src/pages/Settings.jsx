@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { Plug, User, Lock, Loader2, CheckCircle2 } from 'lucide-react';
+import { Plug, User, Lock, Loader2, CheckCircle2, Unplug } from 'lucide-react';
 import Card from '../components/ui/Card.jsx';
 import Button from '../components/ui/Button.jsx';
 import Field from '../components/ui/Field.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
 import { supabase } from '../lib/supabase.js';
-import { fetchUserSettings, upsertUserSettings } from '../lib/settings.js';
+import { fetchUserSettings, upsertUserSettings, deleteUserSettings } from '../lib/settings.js';
 
 const PLACEHOLDER_SECTIONS = [
   { label: 'Espace de travail', description: "Nom de l'équipe, logo et détails du forfait" },
@@ -141,9 +141,12 @@ function SecurityCard() {
 function IntegrationsCard({ user }) {
   const [bookingUrl, setBookingUrl] = useState('');
   const [calendarId, setCalendarId] = useState('');
+  const [connected, setConnected] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [disconnected, setDisconnected] = useState(false);
+  const [confirming, setConfirming] = useState(false);
   const [error, setError] = useState('');
 
   useEffect(() => {
@@ -156,6 +159,7 @@ function IntegrationsCard({ user }) {
       if (data) {
         setBookingUrl(data.booking_url || '');
         setCalendarId(data.calendar_id || '');
+        setConnected(Boolean(data.booking_url || data.calendar_id));
       }
       setLoading(false);
     })();
@@ -169,6 +173,7 @@ function IntegrationsCard({ user }) {
     setSaving(true);
     setError('');
     setSaved(false);
+    setDisconnected(false);
     const { error } = await upsertUserSettings(user.id, {
       booking_url: bookingUrl.trim() || null,
       calendar_id: calendarId.trim() || null,
@@ -180,7 +185,28 @@ function IntegrationsCard({ user }) {
     }
     setSaving(false);
     setSaved(true);
+    setConnected(Boolean(bookingUrl.trim() || calendarId.trim()));
     setTimeout(() => setSaved(false), 2500);
+  };
+
+  const disconnect = async () => {
+    if (!user) return;
+    setSaving(true);
+    setError('');
+    setSaved(false);
+    const { error } = await deleteUserSettings(user.id);
+    if (error) {
+      setError(error.message || 'Erreur lors de la déconnexion.');
+      setSaving(false);
+      return;
+    }
+    setBookingUrl('');
+    setCalendarId('');
+    setConnected(false);
+    setConfirming(false);
+    setSaving(false);
+    setDisconnected(true);
+    setTimeout(() => setDisconnected(false), 3000);
   };
 
   return (
@@ -195,11 +221,38 @@ function IntegrationsCard({ user }) {
           <Field label="Lien de réservation Google (page de rendez-vous)" value={bookingUrl} onChange={(e) => setBookingUrl(e.target.value)} placeholder="https://calendar.app.google/…" />
           <Field label="ID de l'agenda Google" value={calendarId} onChange={(e) => setCalendarId(e.target.value)} placeholder="vous@votredomaine.ca" />
           <div style={{ fontFamily: 'var(--font-body)', fontSize: '12px', color: 'var(--muted)', lineHeight: 1.6 }}>
-            <strong style={{ color: 'var(--text)' }}>Où les trouver :</strong> l'ID de l'agenda se trouve dans Google Agenda → Paramètres → [votre agenda] → « Intégrer l'agenda ». Le lien de réservation provient de votre planification de rendez-vous (Partager → copier le lien). Vous pouvez coller le lien complet — l'ID sera extrait automatiquement.
+            <strong style={{ color: 'var(--text)' }}>Où les trouver :</strong> l'ID de l'agenda se trouve dans Google Agenda → Paramètres → [votre agenda] → « Intégrer l'agenda ». Le lien de réservation provient de votre planification de rendez-vous (Partager → copier le lien). Vous pouvez coller le lien complet — l'ID sera extrait automatiquement. Vous pouvez modifier ces valeurs à tout moment.
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
             <Button size="sm" onClick={save} disabled={saving}>{saving ? 'Enregistrement…' : 'Enregistrer'}</Button>
+
+            {connected && !confirming && (
+              <Button size="sm" variant="secondary" icon={<Unplug />} onClick={() => setConfirming(true)} disabled={saving}>
+                Déconnecter
+              </Button>
+            )}
+            {confirming && (
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '10px', fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--muted)' }}>
+                Déconnecter le calendrier ?
+                <Button size="sm" variant="ghost" onClick={() => setConfirming(false)} disabled={saving}>Annuler</Button>
+                <Button
+                  size="sm"
+                  variant="secondary"
+                  onClick={disconnect}
+                  disabled={saving}
+                  style={{ color: '#fc8181', borderColor: 'rgba(252,129,129,0.35)' }}
+                >
+                  Oui, déconnecter
+                </Button>
+              </span>
+            )}
+
             {saved && <SavedTag />}
+            {disconnected && (
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', color: 'var(--muted)', fontFamily: 'var(--font-display)', fontSize: '12.5px', fontWeight: 600 }}>
+                <Unplug size={14} /> Calendrier déconnecté
+              </span>
+            )}
           </div>
           <ErrorBox message={error} />
         </div>
