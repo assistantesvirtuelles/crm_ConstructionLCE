@@ -1,6 +1,7 @@
 import React from 'react';
 import { useLocation } from 'react-router-dom';
 import { Bell, Search, ChevronDown } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext.jsx';
 
 const PAGE_TITLES = {
   '/dashboard': 'Tableau de bord',
@@ -135,8 +136,12 @@ const styles = {
 
 export default function Header() {
   const { pathname } = useLocation();
+  const { user } = useAuth();
   const title = PAGE_TITLES[pathname] ?? 'Construction LCE';
   const subtitle = PAGE_SUBTITLES[pathname] ?? '';
+
+  const displayName = user?.user_metadata?.full_name?.trim() || user?.email || 'Utilisateur';
+  const initial = displayName.charAt(0).toUpperCase();
 
   return (
     <header style={styles.header}>
@@ -154,8 +159,8 @@ export default function Header() {
           <span style={styles.notifDot} />
         </div>
         <div style={styles.avatar}>
-          <div style={styles.avatarImg}>N</div>
-          <span style={styles.avatarName}>Vous</span>
+          <div style={styles.avatarImg}>{initial}</div>
+          <span style={styles.avatarName}>{displayName}</span>
           <ChevronDown size={12} color="var(--muted)" />
         </div>
       </div>
