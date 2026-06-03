@@ -2,7 +2,7 @@ import React from 'react';
 import { ExternalLink, CalendarDays } from 'lucide-react';
 import Card from '../components/ui/Card.jsx';
 import Button from '../components/ui/Button.jsx';
-import { BOOKING_URL } from '../config.js';
+import { BOOKING_URL, CALENDAR_EMBED_URL } from '../config.js';
 
 function openBooking() {
   window.open(BOOKING_URL, '_blank', 'noopener,noreferrer');
@@ -11,7 +11,7 @@ function openBooking() {
 export default function Meetings() {
   return (
     <div style={{ animation: 'fadeUp 0.35s ease both', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-      {/* Intro + open button */}
+      {/* Intro + book button */}
       <Card style={{ padding: '20px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
           <div style={{
@@ -29,10 +29,10 @@ export default function Meetings() {
           </div>
           <div>
             <div style={{ fontFamily: 'var(--font-display)', fontSize: '15px', fontWeight: 700, color: 'var(--text)', marginBottom: '2px' }}>
-              Planifier un rendez-vous
+              Rendez-vous à venir
             </div>
             <div style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--muted)' }}>
-              Réservez une plage horaire directement dans votre Google Agenda.
+              Votre liste de rendez-vous, synchronisée depuis Google Agenda.
             </div>
           </div>
         </div>
@@ -41,7 +41,7 @@ export default function Meetings() {
         </Button>
       </Card>
 
-      {/* Embedded booking page */}
+      {/* Appointments list (Google Calendar agenda view) */}
       <Card style={{ padding: 0, overflow: 'hidden' }}>
         <div style={{
           padding: '10px 24px',
@@ -50,12 +50,13 @@ export default function Meetings() {
           fontSize: '12px',
           color: 'var(--muted)',
         }}>
-          Vous ne voyez pas le calendrier ci-dessous ? Utilisez le bouton « Réserver un rendez-vous ».
+          Liste de vos prochains rendez-vous. Vous devez être connecté à votre compte Google
+          (ndupuis@constructionlce.ca) pour les voir. Pour en ajouter un, cliquez sur « Réserver un rendez-vous ».
         </div>
         <iframe
-          title="Page de réservation Google"
-          src={BOOKING_URL}
-          style={{ width: '100%', height: '720px', border: 'none', display: 'block', background: '#fff' }}
+          title="Rendez-vous à venir — Google Agenda"
+          src={CALENDAR_EMBED_URL}
+          style={{ width: '100%', height: '640px', border: 'none', display: 'block', background: '#fff' }}
         />
       </Card>
     </div>
