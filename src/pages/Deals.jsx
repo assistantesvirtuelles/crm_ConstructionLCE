@@ -1,11 +1,46 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Handshake, Plus, Search, Loader2 } from 'lucide-react';
+import { Handshake, Plus, Search, Loader2, List, LayoutGrid } from 'lucide-react';
 import Card from '../components/ui/Card.jsx';
 import Button from '../components/ui/Button.jsx';
 import StatusPill from '../components/ui/StatusPill.jsx';
 import EmptyState from '../components/ui/EmptyState.jsx';
 import DealFormModal from '../components/deals/DealFormModal.jsx';
-import { fetchDeals, getStageMeta, formatCurrency } from '../lib/deals.js';
+import DealsPipeline from '../components/deals/DealsPipeline.jsx';
+import { fetchDeals, getStageMeta, formatCurrency, updateDealStage } from '../lib/deals.js';
+
+function ViewToggle({ view, setView }) {
+  const btn = (key, label, Icon) => {
+    const active = view === key;
+    return (
+      <button
+        onClick={() => setView(key)}
+        style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: '6px',
+          padding: '7px 12px',
+          border: 'none',
+          background: active ? 'rgba(46,204,82,0.12)' : 'transparent',
+          color: active ? 'var(--orange)' : 'var(--muted)',
+          fontFamily: 'var(--font-display)',
+          fontSize: '12.5px',
+          fontWeight: 600,
+          cursor: 'pointer',
+        }}
+      >
+        <Icon size={14} />
+        {label}
+      </button>
+    );
+  };
+  return (
+    <div style={{ display: 'flex', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', overflow: 'hidden', background: 'var(--surface-2)' }}>
+      {btn('pipeline', 'Pipeline', LayoutGrid)}
+      <div style={{ width: '1px', background: 'var(--border)' }} />
+      {btn('list', 'Liste', List)}
+    </div>
+  );
+}
 
 function formatDate(value) {
   if (!value) return '—';
@@ -32,6 +67,16 @@ export default function Deals() {
   const [query, setQuery] = useState('');
   const [searchFocused, setSearchFocused] = useState(false);
   const [showAdd, setShowAdd] = useState(false);
+  const [view, setView] = useState('pipeline');
+
+  const moveDeal = async (id, newStage) => {
+    const deal = deals.find((d) => d.id === id);
+    if (!deal || deal.stage === newStage) return;
+    const previous = deals;
+    setDeals((ds) => ds.map((d) => (d.id === id ? { ...d, stage: newStage } : d)));
+    const { error } = await updateDealStage(id, newStage);
+    if (error) setDeals(previous);
+  };
 
   const load = async () => {
     setLoading(true);
@@ -99,9 +144,12 @@ export default function Deals() {
             />
           </div>
 
-          <Button size="sm" icon={<Plus />} onClick={() => setShowAdd(true)}>
-            Créer une opportunité
-          </Button>
+          <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+            <ViewToggle view={view} setView={setView} />
+            <Button size="sm" icon={<Plus />} onClick={() => setShowAdd(true)}>
+              Créer une opportunité
+            </Button>
+          </div>
         </div>
 
         {/* Body */}
@@ -132,6 +180,8 @@ export default function Deals() {
               </Button>
             }
           />
+        ) : view === 'pipeline' ? (
+          <DealsPipeline deals={filtered} onMove={moveDeal} />
         ) : (
           <div>
             {/* Column headers */}

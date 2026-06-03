@@ -72,6 +72,10 @@ export async function createDeal(deal) {
   return supabase.from('crm_deals').insert(cleanDeal(deal)).select().single();
 }
 
+export async function updateDealStage(id, stage) {
+  return supabase.from('crm_deals').update({ stage }).eq('id', id).select().single();
+}
+
 // Dashboard stats: active (open) deals + won revenue.
 export async function fetchDealStats() {
   const { data, error } = await supabase.from('crm_deals').select('stage, value');
