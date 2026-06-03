@@ -45,6 +45,49 @@ export function extractCalendarId(input) {
   return v.trim();
 }
 
+// ── Email ──────────────────────────────────────────────────
+export const EMAIL_PROVIDERS = [
+  { value: 'gmail', label: 'Gmail / Google Workspace' },
+  { value: 'outlook', label: 'Outlook / Microsoft 365' },
+  { value: 'other', label: 'Autre (application par défaut)' },
+];
+
+const EMAIL_PROVIDER_LABELS = Object.fromEntries(EMAIL_PROVIDERS.map((p) => [p.value, p.label]));
+
+export function getEmailProviderLabel(value) {
+  return EMAIL_PROVIDER_LABELS[value] ?? value;
+}
+
+// Webmail inbox URL for a provider (empty for "other" / default mail app).
+export function buildInboxUrl(provider) {
+  if (provider === 'gmail') return 'https://mail.google.com/';
+  if (provider === 'outlook') return 'https://outlook.office.com/mail/';
+  return '';
+}
+
+// Compose URL for a provider, optionally pre-addressed/pre-filled.
+export function buildComposeUrl(provider, { to = '', subject = '', body = '' } = {}) {
+  if (provider === 'gmail') {
+    const p = new URLSearchParams({ view: 'cm', fs: '1' });
+    if (to) p.set('to', to);
+    if (subject) p.set('su', subject);
+    if (body) p.set('body', body);
+    return `https://mail.google.com/mail/?${p.toString()}`;
+  }
+  if (provider === 'outlook') {
+    const p = new URLSearchParams();
+    if (to) p.set('to', to);
+    if (subject) p.set('subject', subject);
+    if (body) p.set('body', body);
+    return `https://outlook.office.com/mail/deeplink/compose?${p.toString()}`;
+  }
+  // default mail app
+  const parts = [];
+  if (subject) parts.push(`subject=${encodeURIComponent(subject)}`);
+  if (body) parts.push(`body=${encodeURIComponent(body)}`);
+  return `mailto:${to}${parts.length ? '?' + parts.join('&') : ''}`;
+}
+
 // Build a Google Calendar agenda (list) embed URL from a calendar ID / email.
 export function buildCalendarEmbedUrl(calendarId, timezone = DEFAULT_TIMEZONE) {
   const id = extractCalendarId(calendarId);

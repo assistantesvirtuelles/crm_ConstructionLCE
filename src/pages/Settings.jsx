@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { Plug, User, Lock, Loader2, CheckCircle2, Unplug } from 'lucide-react';
+import { Plug, User, Lock, Mail, Loader2, CheckCircle2, Unplug } from 'lucide-react';
 import Card from '../components/ui/Card.jsx';
 import Button from '../components/ui/Button.jsx';
 import Field from '../components/ui/Field.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
 import { supabase } from '../lib/supabase.js';
-import { fetchUserSettings, upsertUserSettings, deleteUserSettings } from '../lib/settings.js';
+import { fetchUserSettings, upsertUserSettings, EMAIL_PROVIDERS } from '../lib/settings.js';
 
 const PLACEHOLDER_SECTIONS = [
   { label: 'Espace de travail', description: "Nom de l'équipe, logo et détails du forfait" },
@@ -194,7 +194,8 @@ function IntegrationsCard({ user }) {
     setSaving(true);
     setError('');
     setSaved(false);
-    const { error } = await deleteUserSettings(user.id);
+    // Clear only the calendar fields (the row also holds email settings).
+    const { error } = await upsertUserSettings(user.id, { booking_url: null, calendar_id: null });
     if (error) {
       setError(error.message || 'Erreur lors de la déconnexion.');
       setSaving(false);
@@ -261,6 +262,132 @@ function IntegrationsCard({ user }) {
   );
 }
 
+const EMAIL_PROVIDER_OPTIONS = [
+  { value: '', label: 'Sélectionner un fournisseur…' },
+  ...EMAIL_PROVIDERS,
+];
+
+function EmailCard({ user }) {
+  const [provider, setProvider] = useState('');
+  const [address, setAddress] = useState('');
+  const [connected, setConnected] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
+  const [disconnected, setDisconnected] = useState(false);
+  const [confirming, setConfirming] = useState(false);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      if (!user) return;
+      setLoading(true);
+      const { data } = await fetchUserSettings(user.id);
+      if (!mounted) return;
+      if (data) {
+        setProvider(data.email_provider || '');
+        setAddress(data.email_address || '');
+        setConnected(Boolean(data.email_provider));
+      }
+      setLoading(false);
+    })();
+    return () => {
+      mounted = false;
+    };
+  }, [user]);
+
+  const save = async () => {
+    if (!user) return;
+    if (!provider) {
+      setError('Veuillez choisir un fournisseur de courriel.');
+      return;
+    }
+    setSaving(true);
+    setError('');
+    setSaved(false);
+    setDisconnected(false);
+    const { error } = await upsertUserSettings(user.id, {
+      email_provider: provider,
+      email_address: address.trim() || null,
+    });
+    if (error) {
+      setError(error.message || "Erreur lors de l'enregistrement.");
+      setSaving(false);
+      return;
+    }
+    setSaving(false);
+    setSaved(true);
+    setConnected(true);
+    setTimeout(() => setSaved(false), 2500);
+  };
+
+  const disconnect = async () => {
+    if (!user) return;
+    setSaving(true);
+    setError('');
+    setSaved(false);
+    const { error } = await upsertUserSettings(user.id, { email_provider: null, email_address: null });
+    if (error) {
+      setError(error.message || 'Erreur lors de la déconnexion.');
+      setSaving(false);
+      return;
+    }
+    setProvider('');
+    setAddress('');
+    setConnected(false);
+    setConfirming(false);
+    setSaving(false);
+    setDisconnected(true);
+    setTimeout(() => setDisconnected(false), 3000);
+  };
+
+  return (
+    <Card style={{ padding: '24px' }}>
+      <SectionHeader icon={Mail} title="Courriel" subtitle="Connectez votre courriel pour rédiger et ouvrir votre boîte de réception depuis le CRM." />
+      {loading ? (
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '24px 0 4px', color: 'var(--muted)', fontFamily: 'var(--font-body)', fontSize: '13px' }}>
+          <Loader2 size={16} style={{ animation: 'spin 0.7s linear infinite' }} /> Chargement…
+        </div>
+      ) : (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', marginTop: '18px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
+            <Field label="Fournisseur" options={EMAIL_PROVIDER_OPTIONS} value={provider} onChange={(e) => setProvider(e.target.value)} />
+            <Field label="Adresse courriel" type="email" value={address} onChange={(e) => setAddress(e.target.value)} placeholder="vous@votredomaine.ca" />
+          </div>
+          <div style={{ fontFamily: 'var(--font-body)', fontSize: '12px', color: 'var(--muted)', lineHeight: 1.6 }}>
+            Le CRM ouvre votre webmail pour lire et rédiger — il ne synchronise pas votre boîte de réception (cela nécessiterait l'API du fournisseur).
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+            <Button size="sm" onClick={save} disabled={saving}>{saving ? 'Enregistrement…' : 'Enregistrer'}</Button>
+            {connected && !confirming && (
+              <Button size="sm" variant="secondary" icon={<Unplug />} onClick={() => setConfirming(true)} disabled={saving}>
+                Déconnecter
+              </Button>
+            )}
+            {confirming && (
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '10px', fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--muted)' }}>
+                Déconnecter le courriel ?
+                <Button size="sm" variant="ghost" onClick={() => setConfirming(false)} disabled={saving}>Annuler</Button>
+                <Button size="sm" variant="secondary" onClick={disconnect} disabled={saving} style={{ color: '#fc8181', borderColor: 'rgba(252,129,129,0.35)' }}>
+                  Oui, déconnecter
+                </Button>
+              </span>
+            )}
+            {saved && <SavedTag />}
+            {disconnected && (
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', color: 'var(--muted)', fontFamily: 'var(--font-display)', fontSize: '12.5px', fontWeight: 600 }}>
+                <Unplug size={14} /> Courriel déconnecté
+              </span>
+            )}
+          </div>
+          <ErrorBox message={error} />
+        </div>
+      )}
+    </Card>
+  );
+}
+
 function PlaceholderCard({ label, description }) {
   return (
     <Card style={{ padding: '20px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -287,6 +414,7 @@ export default function Settings() {
       <ProfileCard user={user} />
       <SecurityCard />
       <IntegrationsCard user={user} />
+      <EmailCard user={user} />
       {PLACEHOLDER_SECTIONS.map((s) => (
         <PlaceholderCard key={s.label} label={s.label} description={s.description} />
       ))}
