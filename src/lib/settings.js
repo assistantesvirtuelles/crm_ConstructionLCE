@@ -59,16 +59,24 @@ export function getEmailProviderLabel(value) {
 }
 
 // Webmail inbox URL for a provider (empty for "other" / default mail app).
-export function buildInboxUrl(provider) {
-  if (provider === 'gmail') return 'https://mail.google.com/';
+// `account` (the connected email) targets a specific Google account via authuser,
+// so multi-account users open the right inbox.
+export function buildInboxUrl(provider, account = '') {
+  if (provider === 'gmail') {
+    return account
+      ? `https://mail.google.com/mail/?authuser=${encodeURIComponent(account)}`
+      : 'https://mail.google.com/mail/';
+  }
   if (provider === 'outlook') return 'https://outlook.office.com/mail/';
   return '';
 }
 
 // Compose URL for a provider, optionally pre-addressed/pre-filled.
-export function buildComposeUrl(provider, { to = '', subject = '', body = '' } = {}) {
+// `account` targets a specific Google account (authuser) for multi-account users.
+export function buildComposeUrl(provider, { to = '', subject = '', body = '' } = {}, account = '') {
   if (provider === 'gmail') {
     const p = new URLSearchParams({ view: 'cm', fs: '1' });
+    if (account) p.set('authuser', account);
     if (to) p.set('to', to);
     if (subject) p.set('su', subject);
     if (body) p.set('body', body);

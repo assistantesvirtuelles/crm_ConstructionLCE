@@ -356,7 +356,7 @@ function EmailCard({ user }) {
             <Field label="Adresse courriel" type="email" value={address} onChange={(e) => setAddress(e.target.value)} placeholder="vous@votredomaine.ca" />
           </div>
           <div style={{ fontFamily: 'var(--font-body)', fontSize: '12px', color: 'var(--muted)', lineHeight: 1.6 }}>
-            Le CRM ouvre votre webmail pour lire et rédiger — il ne synchronise pas votre boîte de réception (cela nécessiterait l'API du fournisseur).
+            Le CRM ouvre votre webmail pour lire et rédiger — il ne synchronise pas votre boîte de réception (cela nécessiterait l'API du fournisseur). L'adresse sert aussi à ouvrir le bon compte Google si vous êtes connecté à plusieurs comptes.
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
             <Button size="sm" onClick={save} disabled={saving}>{saving ? 'Enregistrement…' : 'Enregistrer'}</Button>

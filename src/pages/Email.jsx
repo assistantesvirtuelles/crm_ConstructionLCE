@@ -71,8 +71,8 @@ export default function Email() {
     );
   }
 
-  const inboxUrl = buildInboxUrl(provider);
-  const composeUrl = buildComposeUrl(provider, {});
+  const inboxUrl = buildInboxUrl(provider, address);
+  const composeUrl = buildComposeUrl(provider, {}, address);
   const providerLabel = getEmailProviderLabel(provider);
 
   return (
