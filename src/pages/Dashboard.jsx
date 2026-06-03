@@ -1,4 +1,5 @@
-﻿import React from 'react';
+﻿import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Users,
   Handshake,
@@ -11,6 +12,7 @@ import {
 import Card from '../components/ui/Card.jsx';
 import Button from '../components/ui/Button.jsx';
 import EmptyState from '../components/ui/EmptyState.jsx';
+import LeadFormModal from '../components/leads/LeadFormModal.jsx';
 
 const STAT_CARDS = [
   {
@@ -110,10 +112,11 @@ function StatCard({ card, index }) {
   );
 }
 
-function QuickActionCard({ icon: Icon, label, description, color, colorBg, delay }) {
+function QuickActionCard({ icon: Icon, label, description, color, colorBg, delay, onClick }) {
   return (
     <Card
       hoverable
+      onClick={onClick}
       style={{
         padding: '20px',
         display: 'flex',
@@ -147,6 +150,9 @@ function QuickActionCard({ icon: Icon, label, description, color, colorBg, delay
 }
 
 export default function Dashboard() {
+  const navigate = useNavigate();
+  const [showAddLead, setShowAddLead] = useState(false);
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
 
@@ -216,6 +222,7 @@ export default function Dashboard() {
             color="#63b3ed"
             colorBg="rgba(99,179,237,0.10)"
             delay="360ms"
+            onClick={() => setShowAddLead(true)}
           />
           <QuickActionCard
             icon={Handshake}
@@ -300,6 +307,11 @@ export default function Dashboard() {
         </div>
       </Card>
 
+      <LeadFormModal
+        open={showAddLead}
+        onClose={() => setShowAddLead(false)}
+        onCreated={() => navigate('/leads')}
+      />
     </div>
   );
 }
