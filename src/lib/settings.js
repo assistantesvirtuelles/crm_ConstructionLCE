@@ -23,11 +23,29 @@ export async function upsertUserSettings(userId, values) {
     .single();
 }
 
+// Accept either a bare calendar ID/email OR a pasted Google Calendar URL,
+// and return just the calendar ID. This makes the Settings field forgiving:
+// pasting the full embed URL (…/embed?src=you%40domain.ca&ctz=…) still works.
+export function extractCalendarId(input) {
+  if (!input) return '';
+  let v = String(input).trim();
+  const match = v.match(/[?&]src=([^&\s]+)/i);
+  if (match) {
+    try {
+      v = decodeURIComponent(match[1]);
+    } catch (e) {
+      v = match[1];
+    }
+  }
+  return v.trim();
+}
+
 // Build a Google Calendar agenda (list) embed URL from a calendar ID / email.
 export function buildCalendarEmbedUrl(calendarId, timezone = DEFAULT_TIMEZONE) {
-  if (!calendarId) return '';
+  const id = extractCalendarId(calendarId);
+  if (!id) return '';
   const params = new URLSearchParams({
-    src: calendarId,
+    src: id,
     ctz: timezone,
     mode: 'AGENDA',
     showTitle: '0',

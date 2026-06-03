@@ -11,7 +11,6 @@ const STATIC_SECTIONS = [
   { label: 'Espace de travail', description: "Nom de l'équipe, logo et détails du forfait" },
   { label: 'Notifications', description: 'Configurez les alertes et les résumés' },
   { label: 'Sécurité', description: 'Mot de passe, 2FA et sessions actives' },
-  { label: 'Facturation', description: 'Abonnement et moyens de paiement' },
 ];
 
 export default function Settings() {
