@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
 
 export default function Modal({ open, onClose, title, subtitle, children, footer, width = 520 }) {
@@ -14,7 +15,7 @@ export default function Modal({ open, onClose, title, subtitle, children, footer
 
   if (!open) return null;
 
-  return (
+  return createPortal(
     <div
       onClick={onClose}
       style={{
@@ -102,6 +103,7 @@ export default function Modal({ open, onClose, title, subtitle, children, footer
           </div>
         )}
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
