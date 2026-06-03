@@ -68,6 +68,7 @@ export default function Deals() {
   const [searchFocused, setSearchFocused] = useState(false);
   const [showAdd, setShowAdd] = useState(false);
   const [view, setView] = useState('pipeline');
+  const [editTarget, setEditTarget] = useState(null);
 
   const moveDeal = async (id, newStage) => {
     const deal = deals.find((d) => d.id === id);
@@ -181,7 +182,7 @@ export default function Deals() {
             }
           />
         ) : view === 'pipeline' ? (
-          <DealsPipeline deals={filtered} onMove={moveDeal} />
+          <DealsPipeline deals={filtered} onMove={moveDeal} onCardClick={setEditTarget} />
         ) : (
           <div>
             {/* Column headers */}
@@ -205,7 +206,7 @@ export default function Deals() {
             {filtered.map((deal) => {
               const meta = getStageMeta(deal.stage);
               return (
-                <div key={deal.id} style={{
+                <div key={deal.id} onClick={() => setEditTarget(deal)} style={{
                   display: 'flex',
                   alignItems: 'center',
                   padding: '13px 24px',
@@ -213,6 +214,7 @@ export default function Deals() {
                   gap: '16px',
                   fontFamily: 'var(--font-body)',
                   fontSize: '13px',
+                  cursor: 'pointer',
                 }}>
                   <div style={{ flex: 2, color: 'var(--text)', fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{deal.name}</div>
                   <div style={{ flex: 1.5, color: 'var(--muted)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{deal.company || '—'}</div>
@@ -240,7 +242,14 @@ export default function Deals() {
         )}
       </Card>
 
-      <DealFormModal open={showAdd} onClose={() => setShowAdd(false)} onCreated={load} />
+      <DealFormModal open={showAdd} onClose={() => setShowAdd(false)} onSaved={load} />
+      <DealFormModal
+        open={!!editTarget}
+        deal={editTarget}
+        onClose={() => setEditTarget(null)}
+        onSaved={load}
+        onDeleted={load}
+      />
     </div>
   );
 }

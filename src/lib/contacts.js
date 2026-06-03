@@ -33,6 +33,28 @@ export async function bulkInsertContacts(contacts) {
   return supabase.from('crm_contacts').insert(contacts.map(cleanContact)).select();
 }
 
+function cleanContactUpdate(fields) {
+  const out = {};
+  for (const col of WRITABLE_COLUMNS) {
+    if (fields[col] === undefined) continue;
+    let v = fields[col];
+    if (typeof v === 'string') {
+      v = v.trim();
+      if (v === '') v = null;
+    }
+    out[col] = v;
+  }
+  return out;
+}
+
+export async function updateContact(id, fields) {
+  return supabase.from('crm_contacts').update(cleanContactUpdate(fields)).eq('id', id).select().single();
+}
+
+export async function deleteContact(id) {
+  return supabase.from('crm_contacts').delete().eq('id', id);
+}
+
 // ── CSV mapping ────────────────────────────────────────────
 const CONTACT_HEADER_ALIASES = {
   name: ['name', 'nom', 'full name', 'nom complet', 'contact'],

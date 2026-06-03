@@ -78,6 +78,7 @@ export default function Leads() {
   const [convertError, setConvertError] = useState('');
   const [convertDone, setConvertDone] = useState(false);
   const [view, setView] = useState('pipeline');
+  const [editTarget, setEditTarget] = useState(null);
 
   const moveLead = async (id, newStatus) => {
     const lead = leads.find((l) => l.id === id);
@@ -223,7 +224,7 @@ export default function Leads() {
             }
           />
         ) : view === 'pipeline' ? (
-          <LeadsPipeline leads={filtered} onMove={moveLead} />
+          <LeadsPipeline leads={filtered} onMove={moveLead} onCardClick={setEditTarget} />
         ) : (
           <div>
             {/* Column headers */}
@@ -248,7 +249,7 @@ export default function Leads() {
             {filtered.map((lead) => {
               const meta = getStatusMeta(lead.status);
               return (
-                <div key={lead.id} style={{
+                <div key={lead.id} onClick={() => setEditTarget(lead)} style={{
                   display: 'flex',
                   alignItems: 'center',
                   padding: '13px 24px',
@@ -256,6 +257,7 @@ export default function Leads() {
                   gap: '16px',
                   fontFamily: 'var(--font-body)',
                   fontSize: '13px',
+                  cursor: 'pointer',
                 }}>
                   <div style={{ flex: 2, color: 'var(--text)', fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                     {lead.name}
@@ -281,7 +283,7 @@ export default function Leads() {
                         <Check size={13} color="#48c78e" /> Converti
                       </span>
                     ) : (
-                      <Button variant="ghost" size="sm" icon={<UserPlus />} onClick={() => setConvertTarget(lead)}>
+                      <Button variant="ghost" size="sm" icon={<UserPlus />} onClick={(e) => { e.stopPropagation(); setConvertTarget(lead); }}>
                         Convertir
                       </Button>
                     )}
@@ -305,7 +307,15 @@ export default function Leads() {
         )}
       </Card>
 
-      <LeadFormModal open={showAdd} onClose={() => setShowAdd(false)} onCreated={load} />
+      <LeadFormModal open={showAdd} onClose={() => setShowAdd(false)} onSaved={load} />
+      <LeadFormModal
+        open={!!editTarget}
+        lead={editTarget}
+        onClose={() => setEditTarget(null)}
+        onSaved={load}
+        onDeleted={load}
+        onConvert={(lead) => setConvertTarget(lead)}
+      />
       <ImportLeadsModal open={showImport} onClose={() => setShowImport(false)} onImported={load} />
 
       <Modal

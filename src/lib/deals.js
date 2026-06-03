@@ -76,6 +76,34 @@ export async function updateDealStage(id, stage) {
   return supabase.from('crm_deals').update({ stage }).eq('id', id).select().single();
 }
 
+const UPDATABLE_DEAL_COLUMNS = ['name', 'company', 'job_type', 'value', 'stage', 'expected_close_date', 'notes'];
+
+function cleanDealUpdate(fields) {
+  const out = {};
+  for (const col of UPDATABLE_DEAL_COLUMNS) {
+    if (fields[col] === undefined) continue;
+    let v = fields[col];
+    if (typeof v === 'string') {
+      v = v.trim();
+      if (v === '') v = null;
+    }
+    if (col === 'value' && v !== null) {
+      const n = Number(String(v).replace(/[^0-9.,-]/g, '').replace(',', '.'));
+      v = Number.isNaN(n) ? null : n;
+    }
+    out[col] = v;
+  }
+  return out;
+}
+
+export async function updateDeal(id, fields) {
+  return supabase.from('crm_deals').update(cleanDealUpdate(fields)).eq('id', id).select().single();
+}
+
+export async function deleteDeal(id) {
+  return supabase.from('crm_deals').delete().eq('id', id);
+}
+
 // Dashboard stats: active (open) deals + won revenue.
 export async function fetchDealStats() {
   const { data, error } = await supabase.from('crm_deals').select('stage, value');

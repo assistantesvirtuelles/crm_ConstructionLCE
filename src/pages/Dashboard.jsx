@@ -345,12 +345,12 @@ export default function Dashboard() {
       <LeadFormModal
         open={showAddLead}
         onClose={() => setShowAddLead(false)}
-        onCreated={() => navigate('/leads')}
+        onSaved={() => navigate('/leads')}
       />
       <DealFormModal
         open={showAddDeal}
         onClose={() => setShowAddDeal(false)}
-        onCreated={() => navigate('/deals')}
+        onSaved={() => navigate('/deals')}
       />
     </div>
   );

@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react';
 import StatusPill from '../ui/StatusPill.jsx';
 import { LEAD_STATUSES } from '../../lib/leads.js';
 
-export default function LeadsPipeline({ leads, onMove }) {
+export default function LeadsPipeline({ leads, onMove, onCardClick }) {
   const [dragId, setDragId] = useState(null);
   const [overCol, setOverCol] = useState(null);
 
@@ -72,6 +72,7 @@ export default function LeadsPipeline({ leads, onMove }) {
                     setDragId(null);
                     setOverCol(null);
                   }}
+                  onClick={() => onCardClick?.(lead)}
                   style={{
                     background: 'var(--surface)',
                     border: '1px solid var(--border)',

@@ -66,6 +66,31 @@ export async function updateLeadStatus(id, status) {
   return supabase.from('crm_leads').update({ status }).eq('id', id).select().single();
 }
 
+// For edits: allowed columns; empty strings become NULL (so fields can be cleared).
+const UPDATABLE_COLUMNS = ['name', 'email', 'phone', 'company', 'title', 'status', 'source', 'notes'];
+
+function cleanLeadUpdate(fields) {
+  const out = {};
+  for (const col of UPDATABLE_COLUMNS) {
+    if (fields[col] === undefined) continue;
+    let v = fields[col];
+    if (typeof v === 'string') {
+      v = v.trim();
+      if (v === '') v = null;
+    }
+    out[col] = v;
+  }
+  return out;
+}
+
+export async function updateLead(id, fields) {
+  return supabase.from('crm_leads').update(cleanLeadUpdate(fields)).eq('id', id).select().single();
+}
+
+export async function deleteLead(id) {
+  return supabase.from('crm_leads').delete().eq('id', id);
+}
+
 export async function bulkInsertLeads(leads) {
   return supabase.from('crm_leads').insert(leads.map(cleanLead)).select();
 }

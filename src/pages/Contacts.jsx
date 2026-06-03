@@ -33,6 +33,7 @@ export default function Contacts() {
   const [searchFocused, setSearchFocused] = useState(false);
   const [showAdd, setShowAdd] = useState(false);
   const [showImport, setShowImport] = useState(false);
+  const [editTarget, setEditTarget] = useState(null);
 
   const load = async () => {
     setLoading(true);
@@ -162,7 +163,7 @@ export default function Contacts() {
 
             {/* Rows */}
             {filtered.map((c) => (
-              <div key={c.id} style={{
+              <div key={c.id} onClick={() => setEditTarget(c)} style={{
                 display: 'flex',
                 alignItems: 'center',
                 padding: '13px 24px',
@@ -170,6 +171,7 @@ export default function Contacts() {
                 gap: '16px',
                 fontFamily: 'var(--font-body)',
                 fontSize: '13px',
+                cursor: 'pointer',
               }}>
                 <div style={{ flex: 2, color: 'var(--text)', fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{c.name}</div>
                 <div style={{ flex: 2, color: 'var(--muted)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{c.email || '—'}</div>
@@ -194,7 +196,14 @@ export default function Contacts() {
         )}
       </Card>
 
-      <ContactFormModal open={showAdd} onClose={() => setShowAdd(false)} onCreated={load} />
+      <ContactFormModal open={showAdd} onClose={() => setShowAdd(false)} onSaved={load} />
+      <ContactFormModal
+        open={!!editTarget}
+        contact={editTarget}
+        onClose={() => setEditTarget(null)}
+        onSaved={load}
+        onDeleted={load}
+      />
       <ImportContactsModal open={showImport} onClose={() => setShowImport(false)} onImported={load} />
     </div>
   );

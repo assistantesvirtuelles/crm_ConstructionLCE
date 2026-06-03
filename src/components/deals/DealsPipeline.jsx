@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react';
 import StatusPill from '../ui/StatusPill.jsx';
 import { DEAL_STAGES, formatCurrency } from '../../lib/deals.js';
 
-export default function DealsPipeline({ deals, onMove }) {
+export default function DealsPipeline({ deals, onMove, onCardClick }) {
   const [dragId, setDragId] = useState(null);
   const [overCol, setOverCol] = useState(null);
 
@@ -76,6 +76,7 @@ export default function DealsPipeline({ deals, onMove }) {
                     setDragId(null);
                     setOverCol(null);
                   }}
+                  onClick={() => onCardClick?.(deal)}
                   style={{
                     background: 'var(--surface)',
                     border: '1px solid var(--border)',
