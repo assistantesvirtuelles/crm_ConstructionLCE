@@ -24,10 +24,10 @@ export default function Modal({ open, onClose, title, subtitle, children, footer
         background: 'rgba(0,0,0,0.6)',
         backdropFilter: 'blur(4px)',
         display: 'flex',
-        alignItems: 'flex-start',
+        alignItems: 'center',
         justifyContent: 'center',
-        padding: '48px 20px',
-        overflowY: 'auto',
+        padding: '24px',
+        overflow: 'hidden',
       }}
     >
       <div
@@ -35,6 +35,9 @@ export default function Modal({ open, onClose, title, subtitle, children, footer
         style={{
           width: '100%',
           maxWidth: `${width}px`,
+          maxHeight: 'calc(100vh - 48px)',
+          display: 'flex',
+          flexDirection: 'column',
           background: 'var(--surface)',
           border: '1px solid var(--border)',
           borderRadius: '18px',
@@ -49,6 +52,7 @@ export default function Modal({ open, onClose, title, subtitle, children, footer
           justifyContent: 'space-between',
           padding: '20px 24px',
           borderBottom: '1px solid var(--border)',
+          flexShrink: 0,
         }}>
           <div>
             <div style={{ fontFamily: 'var(--font-display)', fontSize: '16px', fontWeight: 700, color: 'var(--text)' }}>
@@ -82,7 +86,7 @@ export default function Modal({ open, onClose, title, subtitle, children, footer
         </div>
 
         {/* Body */}
-        <div style={{ padding: '24px' }}>{children}</div>
+        <div style={{ padding: '24px', flex: 1, minHeight: 0, overflowY: 'auto' }}>{children}</div>
 
         {/* Footer */}
         {footer && (
@@ -92,6 +96,7 @@ export default function Modal({ open, onClose, title, subtitle, children, footer
             gap: '10px',
             padding: '16px 24px',
             borderTop: '1px solid var(--border)',
+            flexShrink: 0,
           }}>
             {footer}
           </div>
