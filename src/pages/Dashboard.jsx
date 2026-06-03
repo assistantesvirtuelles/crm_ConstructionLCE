@@ -15,6 +15,7 @@ import LeadFormModal from '../components/leads/LeadFormModal.jsx';
 import DealFormModal from '../components/deals/DealFormModal.jsx';
 import { fetchLeadStats, LEAD_STATUSES } from '../lib/leads.js';
 import { fetchDealStats, formatCurrency } from '../lib/deals.js';
+import { BOOKING_URL } from '../config.js';
 
 const STAT_CARDS = [
   {
@@ -252,6 +253,7 @@ export default function Dashboard() {
             color="#b794f4"
             colorBg="rgba(183,148,244,0.10)"
             delay="440ms"
+            onClick={() => window.open(BOOKING_URL, '_blank', 'noopener,noreferrer')}
           />
         </div>
       </div>
