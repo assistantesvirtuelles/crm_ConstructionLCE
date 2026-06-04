@@ -104,15 +104,27 @@ export async function deleteDeal(id) {
   return supabase.from('crm_deals').delete().eq('id', id);
 }
 
-// Dashboard stats: active (open) deals + won revenue.
+// Dashboard stats: active (open) deals + won revenue (+ won this month).
+// "This month" is based on the expected close date falling in the current month.
 export async function fetchDealStats() {
-  const { data, error } = await supabase.from('crm_deals').select('stage, value');
+  const { data, error } = await supabase.from('crm_deals').select('stage, value, expected_close_date');
   if (error) return { error };
   let active = 0;
   let revenue = 0;
+  let wonThisMonth = 0;
+  const now = new Date();
+  const y = now.getFullYear();
+  const m = now.getMonth() + 1; // 1-12
   for (const d of data) {
     if (d.stage !== 'won' && d.stage !== 'lost') active += 1;
-    if (d.stage === 'won') revenue += Number(d.value) || 0;
+    if (d.stage === 'won') {
+      const v = Number(d.value) || 0;
+      revenue += v;
+      if (d.expected_close_date) {
+        const [yy, mm] = String(d.expected_close_date).split('-').map(Number);
+        if (yy === y && mm === m) wonThisMonth += v;
+      }
+    }
   }
-  return { total: data.length, active, revenue };
+  return { total: data.length, active, revenue, wonThisMonth };
 }

@@ -8,7 +8,7 @@ import { fetchUserSettings, buildComposeUrl } from '../../lib/settings.js';
 import { useAuth } from '../../context/AuthContext.jsx';
 
 const EMPTY = {
-  name: '', email: '', phone: '', company: '', title: '', status: 'new', source: '', notes: '',
+  name: '', email: '', phone: '', company: '', title: '', status: 'new', source: '', notes: '', assigned_to: '',
 };
 
 function fromLead(lead) {
@@ -16,7 +16,7 @@ function fromLead(lead) {
   return {
     name: lead.name || '', email: lead.email || '', phone: lead.phone || '',
     company: lead.company || '', title: lead.title || '', status: lead.status || 'new',
-    source: lead.source || '', notes: lead.notes || '',
+    source: lead.source || '', notes: lead.notes || '', assigned_to: lead.assigned_to || '',
   };
 }
 
@@ -147,6 +147,7 @@ export default function LeadFormModal({ open, onClose, lead = null, onSaved, onD
           <Field label="Statut" options={LEAD_STATUSES} value={form.status} onChange={set('status')} />
           <Field label="Source" value={form.source} onChange={set('source')} placeholder="Référence, site web…" />
         </div>
+        <Field label="Assigné à" value={form.assigned_to} onChange={set('assigned_to')} placeholder="Nom du membre de l'équipe" />
         <Field label="Notes" textarea value={form.notes} onChange={set('notes')} placeholder="Informations supplémentaires…" />
 
         {error && (

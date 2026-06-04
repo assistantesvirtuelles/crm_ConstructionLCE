@@ -96,6 +96,11 @@ function StatCard({ card, index }) {
       }}>
         {card.label}
       </div>
+      {card.sub && (
+        <div style={{ fontFamily: 'var(--font-display)', fontSize: '12px', fontWeight: 600, color: '#48c78e', marginTop: '6px' }}>
+          {card.sub}
+        </div>
+      )}
     </Card>
   );
 }
@@ -179,6 +184,13 @@ export default function Dashboard() {
     return card.value; // meetings: no backing table yet
   };
 
+  const statSub = (card) => {
+    if (card.key === 'revenue' && !statsLoading && (dealStats?.wonThisMonth ?? 0) > 0) {
+      return `${formatCurrency(dealStats.wonThisMonth)} gagné ce mois`;
+    }
+    return null;
+  };
+
   const total = stats?.total ?? 0;
 
   return (
@@ -191,7 +203,7 @@ export default function Dashboard() {
         gap: '16px',
       }}>
         {STAT_CARDS.map((card, i) => (
-          <StatCard key={card.label} card={{ ...card, value: statValue(card) }} index={i} />
+          <StatCard key={card.label} card={{ ...card, value: statValue(card), sub: statSub(card) }} index={i} />
         ))}
       </section>
 

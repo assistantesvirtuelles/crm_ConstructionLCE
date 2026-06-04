@@ -96,6 +96,11 @@ export default function LeadsPipeline({ leads, onMove, onCardClick }) {
                       {lead.email}
                     </div>
                   )}
+                  {lead.assigned_to && (
+                    <div style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', marginTop: '7px', fontFamily: 'var(--font-display)', fontSize: '11px', fontWeight: 600, color: 'var(--orange)', background: 'rgba(46,204,82,0.10)', border: '1px solid rgba(46,204,82,0.20)', borderRadius: 'var(--radius-pill)', padding: '2px 8px', maxWidth: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      {lead.assigned_to}
+                    </div>
+                  )}
                 </div>
               ))}
               {items.length === 0 && (

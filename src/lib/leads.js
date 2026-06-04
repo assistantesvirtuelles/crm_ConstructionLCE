@@ -21,7 +21,7 @@ export function getStatusMeta(value) {
 // Columns the app is allowed to write. Anything else (e.g. stray CSV columns)
 // is dropped so inserts don't fail on unknown fields.
 const WRITABLE_COLUMNS = [
-  'name', 'email', 'phone', 'company', 'title', 'status', 'source', 'notes', 'created_by',
+  'name', 'email', 'phone', 'company', 'title', 'status', 'source', 'notes', 'created_by', 'assigned_to',
 ];
 
 function cleanLead(lead) {
@@ -79,6 +79,10 @@ function cleanLeadUpdate(fields) {
       if (v === '') v = null;
     }
     out[col] = v;
+  }
+  // assigned_to: only write when set (keeps edits working pre-migration)
+  if (fields.assigned_to && String(fields.assigned_to).trim()) {
+    out.assigned_to = String(fields.assigned_to).trim();
   }
   return out;
 }
