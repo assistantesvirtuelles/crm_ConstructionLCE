@@ -8,10 +8,10 @@ import {
   CalendarDays,
   Mail,
   Settings,
-  Zap,
   LogOut,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext.jsx';
+import Logo from '../ui/Logo.jsx';
 
 const NAV_ITEMS = [
   { label: 'Tableau de bord', icon: LayoutDashboard, to: '/dashboard' },
@@ -172,13 +172,7 @@ export default function Sidebar() {
   return (
     <aside style={styles.sidebar}>
       <div style={styles.logo}>
-        <div style={styles.logoIcon}>
-          <Zap size={16} color="#fff" strokeWidth={2.5} />
-        </div>
-        <div>
-          <div style={styles.logoText}>Construction LCE</div>
-          <div style={styles.logoSub}>CRM</div>
-        </div>
+        <Logo constructionSize={13} lceSize={22} />
       </div>
 
       <nav style={styles.nav}>

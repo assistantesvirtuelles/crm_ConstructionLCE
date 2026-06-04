@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Zap, LogIn, Loader2 } from 'lucide-react';
+import { LogIn, Loader2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext.jsx';
+import Logo from '../components/ui/Logo.jsx';
 
 function TextField({ label, type, value, onChange, placeholder, autoComplete, disabled }) {
   const [focused, setFocused] = useState(false);
@@ -84,39 +85,15 @@ export default function Login() {
         boxShadow: '0 24px 64px rgba(0,0,0,0.5)',
         animation: 'fadeUp 0.45s ease both',
       }}>
-        {/* Logo + title */}
+        {/* Logo + tagline */}
         <div style={{
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          gap: '14px',
+          gap: '16px',
           marginBottom: '32px',
         }}>
-          <div style={{
-            width: '52px',
-            height: '52px',
-            borderRadius: '14px',
-            background: 'linear-gradient(135deg, var(--orange), var(--orange-dark))',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            boxShadow: '0 8px 24px rgba(46,204,82,0.30)',
-          }}>
-            <Zap size={24} color="#fff" strokeWidth={2.5} />
-          </div>
-          <h1 style={{
-            fontFamily: 'var(--font-display)',
-            fontSize: '28px',
-            fontWeight: 800,
-            letterSpacing: '-0.6px',
-            background: 'linear-gradient(135deg, var(--orange), var(--orange-dark))',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            backgroundClip: 'text',
-            margin: 0,
-          }}>
-            Construction LCE
-          </h1>
+          <Logo constructionSize={24} lceSize={44} showTagline align="center" />
           <p style={{
             fontFamily: 'var(--font-body)',
             fontSize: '13.5px',

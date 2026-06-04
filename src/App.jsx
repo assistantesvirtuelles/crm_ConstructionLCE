@@ -1,6 +1,5 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { Zap } from 'lucide-react';
 import { AuthProvider, useAuth } from './context/AuthContext.jsx';
 import AppShell from './components/layout/AppShell.jsx';
 import Login from './pages/Login.jsx';
@@ -24,17 +23,15 @@ function LoadingScreen() {
       zIndex: 1,
     }}>
       <div style={{
-        width: '56px',
-        height: '56px',
-        borderRadius: '16px',
-        background: 'linear-gradient(135deg, var(--orange), var(--orange-dark))',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        boxShadow: '0 8px 32px rgba(46,204,82,0.35)',
+        fontFamily: 'var(--font-display)',
+        fontWeight: 800,
+        fontSize: '40px',
+        letterSpacing: '4px',
         animation: 'pulse 1.4s ease-in-out infinite',
       }}>
-        <Zap size={26} color="#fff" strokeWidth={2.5} />
+        <span style={{ color: 'var(--orange)' }}>L</span>
+        <span style={{ color: 'var(--text)' }}>C</span>
+        <span style={{ color: 'var(--orange)' }}>E</span>
       </div>
     </div>
   );
